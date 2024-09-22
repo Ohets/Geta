@@ -64,11 +64,10 @@
         <iframe id="gameFrame" src="https://zap.struckd.com/games/geta-47"></iframe>
     </div>
 
-    
-
     <button onclick="saveIpAddress()">Play</button>
     <button onclick="showSavedIPs()">IP-Adressen anzeigen</button>
     <p id="status"></p>
+    <p id="lastVisitor">Letzter Besucher: Wird geladen...</p>
 
     <script>
         // Funktion zum Abrufen und Speichern der IP-Adresse in LocalStorage
@@ -84,9 +83,15 @@
                     savedIPs.push(data.ip);
                     localStorage.setItem('savedIPs', JSON.stringify(savedIPs));
 
+                    // Letzten Besucher speichern
+                    localStorage.setItem('lastVisitor', data.ip);
+                    
                     // Optional: Abrufen der gespeicherten IP-Adressen aus dem LocalStorage
                     const allSavedIPs = JSON.parse(localStorage.getItem('savedIPs'));
                     console.log("Gespeicherte IP-Adressen:", allSavedIPs);
+
+                    // Letzten Besucher anzeigen
+                    document.getElementById('lastVisitor').textContent = `Letzter Besucher: ${data.ip}`;
                 })
                 .catch(error => {
                     console.error('Fehler beim Abrufen der IP-Adresse:', error);
@@ -104,10 +109,23 @@
             }
         }
 
+        // Letzten Besucher anzeigen, wenn die Seite geladen wird
+        function showLastVisitor() {
+            const lastVisitor = localStorage.getItem('lastVisitor');
+            if (lastVisitor) {
+                document.getElementById('lastVisitor').textContent = `Letzter Besucher: ${lastVisitor}`;
+            } else {
+                document.getElementById('lastVisitor').textContent = 'Letzter Besucher: Keine Daten vorhanden';
+            }
+        }
+
         // IP-Adresse speichern, wenn das Spiel (iframe) geladen wird
         document.getElementById('gameFrame').addEventListener('load', function() {
             saveIpAddress(); // IP-Adresse speichern, wenn das iframe geladen wird
         });
+
+        // Zeige den letzten Besucher beim Laden der Seite
+        window.onload = showLastVisitor;
     </script>
 </body>
 </html>
